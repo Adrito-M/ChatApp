@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse,  HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from base64 import b64encode
 import json
 from . import auth, message
 
@@ -33,8 +34,7 @@ def login(request):
             jwt = auth.signJWT({'username': dic['username']})
             response = redirect('/dashboard')
             response.set_cookie('jwt', jwt)
-            response.set_cookie('info', dic)
-            print(json.dumps(dic))
+            response.set_cookie('info', b64encode(json.dumps(dic).encode()).decode())
             return response
     
     return render(request, 'login.html', context)
@@ -62,8 +62,7 @@ def register(request):
             jwt = auth.signJWT({'username': dic['username']})
             response = redirect('/dashboard')
             response.set_cookie('jwt', jwt)
-            response.set_cookie('info', json.dumps(dic))
-            print(json.dumps(dic))
+            response.set_cookie('info', b64encode(json.dumps(dic).encode()).decode())
             return response
             
     return render(request, 'register.html', context)
@@ -71,9 +70,9 @@ def register(request):
 def dashboard(request):
     isVerified, dic = auth.verifyJWT(request.COOKIES.get('jwt'))
     if not isVerified:
-        return redirect('login', {'message': 'Login Failed'})
+        return redirect('/login', {'message': 'Login Failed'})
     inbox = message.getMessage(dic['username'])
-    return render(request, 'dashboard.html', {'inbox':inbox, 'usernames': list(inbox.keys()), 'owner': dic['username'] })
+    return render(request, 'dashboard.html', {'inbox':inbox, 'usernames': ' '.join(list(inbox.keys())), 'owner': dic['username'] })
 
 
 @csrf_exempt

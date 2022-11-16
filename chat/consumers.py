@@ -1,63 +1,90 @@
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from asgiref.sync import sync_to_async
+from channels.generic.websocket import JsonWebsocketConsumer
+from asgiref.sync import async_to_sync
 from . import auth, message
+import channels.layers
 
-class UserChatConsumer(AsyncJsonWebsocketConsumer):
+channel_layer = channels.layers.get_channel_layer()
+
+class UserChatConsumer(JsonWebsocketConsumer):
 
     channel_dict = dict()
 
-    async def connect(self):
-        await self.accept()
+    def connect(self):
+        self.accept()
     
-    async def receive_json(self, content, **kwargs):
-        ok, dic = await sync_to_async(auth.verifyJWT)(content.jwt)
+    def receive_json(self, content, **kwargs):
+        if 'jwt' not in list(content.keys()):
+            self.close()
+            return
+
+        if type(content['jwt']) is not str:
+            self.close()
+            return
+            
+        ok, dic = auth.verifyJWT(content['jwt'])
         if not ok:
-            await self.close()
+            self.close()
+            return
         
         if content['purpose'] == 'connect':
-            await self.channel_layer.group_add(dic['username'], self.channel_name)
+            async_to_sync(self.channel_layer.group_add)(dic['username'], self.channel_name)
             self.channel_dict[self.channel_name] = dic['username']
+            self.send_json({
+                'purpose': 'connect',
+                'status': 'success'
+            })
+            return
 
         elif content['purpose'] == 'get':
-            pass
+            return            
 
         elif content['purpose'] == 'send':
             receiver = content['receiver']
             sender = dic['username']
             messageContent = content['content']
-            await sync_to_async(message.addMessage)(messageContent, sender, receiver)
-            await self.channel_layer.group_send(receiver, {
+            message.addMessage(messageContent, sender, receiver)
+            async_to_sync(self.channel_layer.group_send)(receiver, {
                 'type': 'chat.message',
-                'purpose': 'send',
+                'purpose': 'incoming',
                 'sender': sender,
                 'content': messageContent,
-                'gpowerkey': await sync_to_async(auth.getgpowerkey(sender))
             })
-            await self.send_json({
+            self.send_json({
                 'purpose': 'send',
                 'status': 'success',
             })
+            return
         
         elif content['purpose'] == 'receive':
             receiver = dic['username']
-            broadcasts = await sync_to_async(message.receiveMessage)(receiver)
+            broadcasts = message.receiveMessage(receiver)
             for broadcast in broadcasts:
-                await self.channel_layer.group_send(broadcast, {
+                async_to_sync(self.channel_layer.group_send)(broadcast, {
                     'type': 'chat.message',
                     'purpose': 'receive',
                     'receiver': receiver
                 })
+            return
 
         elif content['purpose'] == 'seen':
             receiver = dic['username']
             sender = content['sender']
-            await sync_to_async(message.seenMessage)(receiver, sender)
+            message.seenMessage(receiver, sender)
+            async_to_sync(self.channel_layer.group_send)(sender, {
+                'type': 'chat.message',
+                'purpose': 'seen',
+                'receiver': receiver
+            })
+            return
 
 
 
-    async def disconnect(self, code):
+    def disconnect(self, code):
         try:
-            await self.channel_layer.group_discard(self.channel_dict[self.channel_name], self.channel_name)
+            async_to_sync(self.channel_layer.group_discard)(self.channel_dict[self.channel_name], self.channel_name)
             del self.channel_dict[self.channel_name]
         except KeyError:
             pass
+
+    def chat_message(self, event):
+        self.send_json(event)

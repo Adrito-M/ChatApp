@@ -98,9 +98,9 @@ def getUser(username: str, password: str) -> dict:
 
     userinfo['username'] = user.username
     userinfo['name'] = user.name
-    userinfo['pvtkey'] = pvtkey
-    userinfo['N'] = settings.N
-    userinfo['G'] = settings.G
+    userinfo['pvtkey'] = str(pvtkey)
+    userinfo['N'] = str(settings.N)
+    userinfo['G'] = str(settings.G)
 
     return userinfo
 
@@ -121,7 +121,7 @@ def signJWT(dic: dict) -> str:
 def verifyJWT(jwt: str) -> Tuple[bool, dict]:
     try:
         a, b, c = jwt.split('.')
-    except ValueError:
+    except Exception:
         return False, {}
     c2 = b64encode(hmac.new(
             key = settings.JWT_SECRET.encode(),
@@ -136,7 +136,7 @@ def verifyJWT(jwt: str) -> Tuple[bool, dict]:
 
     return True, dic
 
-def getgpowerkey(username: str):
+def getgpowerkey(username: str) -> int:
     user = User.objects.get(username=username)
     return int(user.gpowerkey)
 

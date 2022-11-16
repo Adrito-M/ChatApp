@@ -24,15 +24,17 @@ def receiveMessage(receiverName: str) -> List[str]:
     
     messages = Message.objects.filter(receiver=receiver, status='S')
     
-    broadcast = []
+    broadcast = set()
 
     for message in messages:
-        broadcast.append(message.sender)
+        broadcast.add(message.sender.username)
 
     messages.update(status='R')
 
+    return list(broadcast)
 
-def seeMessage(receiverName: str, senderName: str) -> None:
+
+def seenMessage(receiverName: str, senderName: str) -> None:
     try:
         receiver = User.objects.get(username=receiverName)
         sender = User.objects.get(username=senderName)
@@ -72,7 +74,7 @@ def getMessage(username: str) -> dict:
                 'status': message.status,
             })
         elif message.receiver == user:
-            inbox[message.receiver.username].append({
+            inbox[message.sender.username].append({
                 'type': 'received',
                 'content': message.content,
                 'username': message.sender.username,
