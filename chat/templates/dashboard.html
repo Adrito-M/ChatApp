@@ -26,6 +26,7 @@
             {% endfor %}
         </left>
         <right>
+			<button onclick="logout()" class="logoutbtn">LOGOUT</button>
             <section class="msger" id="default">
 				<header class="msger-header">
 					<div class="msger-header-title"><i class="fas fa-comment-alt"></i>ITWChat</div>
@@ -341,6 +342,14 @@
 
 	.pending {
 	}
+
+	.logoutbtn {
+		position:absolute; top:1%; right:2%; background-color:rgb(28, 32, 74); border-radius:5px; padding:8px; border:0px; color:white; font-size:1.3rem
+	}
+
+	.logoutbtn:hover {
+		cursor: pointer;
+	}
 </style>
 
 <script>
@@ -453,6 +462,11 @@
             adduserform.hidden = true
         }
     })
+
+	function logout() {
+		localStorage.clear()
+		window.location.replace('/login')
+	}
 	
 	const socket = new WebSocket(`ws://${window.location.host}/ws/chat/user`)
 

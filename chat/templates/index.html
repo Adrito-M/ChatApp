@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+    <div class="holder">
+        <div class="row0">
+        <image src="https://svgsilh.com/svg/1332804.svg" class="svgimage" width=300px>
+        </div>
+        <div class="row1">
+        <image src="https://cdn-icons-png.flaticon.com/512/1384/1384178.png" height=120px>
+        <div class="name">ITWCHAT</div>
+        </div>
+        <div class="row2">
+            <a href="/login"><button type="button">LOGIN</button></a>
+            <a href="/register"><button type="button">REGISTER</button></a>
+        </div>
+    </div>
+</body>
+</html>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+html {
+    background-color: rgb(28, 32, 74);
+}
+
+.holder {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.row1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.row2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.row0 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.name {
+    font-size: 6rem;
+    font-family: "Archivo Black", sans-serif;
+    color: ;
+    margin-left: 20px;
+    background-color: rgba(9,9,121,1);
+    background-image: linear-gradient(45deg, rgb(11, 231, 254), rgb(59, 126, 193));
+    background-size: 100%;
+    background-repeat: repeat;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    -moz-background-clip: text;
+    -moz-text-fill-color: transparent;
+}
+
+button {
+    background-color: rgba(9,9,121,1);
+    background-image: linear-gradient(45deg, rgb(11, 231, 254), rgb(59, 126, 193));
+    color: white;
+    font-size: 2rem;
+    font-family: "Archivo Black", sans-serif;
+    padding:20px;
+    margin: 10px;
+    border: 0px;
+    border-radius: 99999px;
+    margin-top: 40px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.svgimage {
+    filter: invert(51%) sepia(93%) saturate(394%) hue-rotate(145deg) brightness(102%) contrast(98%);
+}
+</style>
