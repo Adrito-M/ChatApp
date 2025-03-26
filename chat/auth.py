@@ -108,7 +108,7 @@ def signJWT(dic: dict) -> str:
     a = b64encode(json.dumps({'type':'JWT', 'alg':'HS256'}).encode()).decode()
     b = b64encode(json.dumps(dic).encode()).decode()
     c = b64encode(hmac.new(
-            key = settings.JWT_SECRET.encode(),
+            key = settings.JWT_SECRET,
             msg = f'{a}.{b}'.encode(),
             digestmod = hashlib.sha256
         ).hexdigest().encode()).decode()
@@ -124,7 +124,7 @@ def verifyJWT(jwt: str) -> Tuple[bool, dict]:
     except Exception:
         return False, {}
     c2 = b64encode(hmac.new(
-            key = settings.JWT_SECRET.encode(),
+            key = settings.JWT_SECRET,
             msg = f'{a}.{b}'.encode(),
             digestmod = hashlib.sha256
         ).hexdigest().encode()).decode()

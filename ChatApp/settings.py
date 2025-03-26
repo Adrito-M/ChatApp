@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-h4)9dyy4vig9tvd9^ux5nx%@#hf8om+6jmvmg@up1bic!keu!l
 
 N = int(config('N'))
 G = int(config('G'))
-JWT_SECRET = config('JWT_SECRET')
+JWT_SECRET = bytes.fromhex(config('JWT_SECRET'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'channels',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

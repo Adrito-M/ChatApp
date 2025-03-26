@@ -373,8 +373,8 @@
 
     function getkey(a) {
         a = BigInt(a)
-        b = BigInt(localStorage.getItem('pvtkey'))
-        m = BigInt(localStorage.getItem('N'))
+        b = BigInt(sessionStorage.getItem('pvtkey'))
+        m = BigInt(sessionStorage.getItem('N'))
         a %= m;
         res = 1n;
         while (b > 0n) {
@@ -386,12 +386,12 @@
         return res.toString();
     }
 
-	localStorage.setItem('jwt', get_cookie('jwt').slice(1, -1))
+	sessionStorage.setItem('jwt', get_cookie('jwt').slice(1, -1))
 
 	if (get_cookie('info')) {
 		const info = JSON.parse(atob(get_cookie('info').split('"').filter(i => i !== '')[0]))
-		localStorage.setItem('pvtkey', info.pvtkey)
-		localStorage.setItem('N', info.N)
+		sessionStorage.setItem('pvtkey', info.pvtkey)
+		sessionStorage.setItem('N', info.N)
 		delete_cookie('info')
 	}
 
@@ -464,7 +464,7 @@
     })
 
 	function logout() {
-		localStorage.clear()
+		sessionStorage.clear()
 		window.location.replace('/login')
 	}
 	
@@ -495,7 +495,7 @@
         document.querySelector('#m'+clickedid).focus()
 		socket.send(JSON.stringify({
 			'purpose': 'seen',
-			'jwt': localStorage.getItem('jwt'),
+			'jwt': sessionStorage.getItem('jwt'),
 			'sender': clickedid,
 		}))
     }
@@ -526,7 +526,7 @@
         console.log(enc_content)
 		socket.send(JSON.stringify({
 			purpose: 'send',
-			jwt: localStorage.getItem('jwt'),
+			jwt: sessionStorage.getItem('jwt'),
 			content: enc_content,
 			receiver: receiverId
 		}))
@@ -538,12 +538,12 @@
 	socket.onopen = e => {
 		socket.send(JSON.stringify({
 			'purpose': 'connect',
-			'jwt': localStorage.getItem('jwt')
+			'jwt': sessionStorage.getItem('jwt')
 		}))
 		
 		socket.send(JSON.stringify({
 			'purpose': 'receive',
-			'jwt': localStorage.getItem('jwt')
+			'jwt': sessionStorage.getItem('jwt')
 		}))
 	}
 
@@ -638,13 +638,13 @@
 			if (document.querySelector('#r'+sender).style.display !== 'none') {
 				socket.send(JSON.stringify({
 					'purpose': 'seen',
-					'jwt': localStorage.getItem('jwt'),
+					'jwt': sessionStorage.getItem('jwt'),
 					'sender': sender,
 				}))
 			} else {
 				socket.send(JSON.stringify({
 					'purpose': 'receive',
-					'jwt': localStorage.getItem('jwt')
+					'jwt': sessionStorage.getItem('jwt')
 				}))
 			}
 		}
